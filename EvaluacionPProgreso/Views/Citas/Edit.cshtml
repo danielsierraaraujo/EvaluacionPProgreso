@@ -1,54 +1,82 @@
 ﻿@model EvaluacionPProgreso.Models.Cita
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Editar Cita";
 }
 
-<h1>Edit</h1>
+<h1>Editar Cita</h1>
 
-<h4>Cita</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Id" />
-            <div class="form-group">
-                <label asp-for="FechaVisita" class="control-label"></label>
-                <input asp-for="FechaVisita" class="form-control" />
-                <span asp-validation-for="FechaVisita" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Motivo" class="control-label"></label>
-                <select asp-for="Motivo" class="form-control"></select>
-                <span asp-validation-for="Motivo" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Tarifa" class="control-label"></label>
-                <input asp-for="Tarifa" class="form-control" />
-                <span asp-validation-for="Tarifa" class="text-danger"></span>
-            </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="RequiereMedicacion" /> @Html.DisplayNameFor(model => model.RequiereMedicacion)
-                </label>
-            </div>
-            <div class="form-group">
-                <label asp-for="MascotaId" class="control-label"></label>
-                <select asp-for="MascotaId" class="form-control" asp-items="ViewBag.MascotaId"></select>
-                <span asp-validation-for="MascotaId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
+<form asp-action="Edit">
+    <input type="hidden" asp-for="Id" />
+
+    <div class="form-group">
+        <label asp-for="FechaVisita" class="control-label"></label>
+        <input asp-for="FechaVisita" class="form-control" type="datetime-local" />
+        <span asp-validation-for="FechaVisita" class="text-danger"></span>
     </div>
-</div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+    <div class="form-group">
+        <label asp-for="Motivo" class="control-label"></label>
+        <select asp-for="Motivo" class="form-control" id="motivoSelect">
+            <option value="Vacunacion">Vacunación</option>
+            <option value="RevisionGeneral">Revisión General</option>
+            <option value="Cirugia">Cirugía</option>
+        </select>
+        <span asp-validation-for="Motivo" class="text-danger"></span>
+    </div>
+
+    <div class="form-group form-check">
+        <input asp-for="RequiereMedicacion" class="form-check-input" id="requiereMed" />
+        <label class="form-check-label" asp-for="RequiereMedicacion"></label>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Tarifa" class="control-label"></label>
+        <input asp-for="Tarifa" class="form-control" readonly id="tarifaInput" />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="MascotaId" class="control-label"></label>
+        <select asp-for="MascotaId" class="form-control" asp-items="ViewBag.MascotaId"></select>
+        <span asp-validation-for="MascotaId" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Guardar</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+</form>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        function calcularTarifa() {
+            const motivo = document.getElementById("motivoSelect").value;
+            const requiereMed = document.getElementById("requiereMed").checked;
+
+            let tarifaBase = 0;
+
+            switch (motivo) {
+                case "Vacunacion":
+                    tarifaBase = 30;
+                    break;
+                case "RevisionGeneral":
+                    tarifaBase = 20;
+                    break;
+                case "Cirugia":
+                    tarifaBase = 100;
+                    break;
+            }
+
+            if (requiereMed) {
+                tarifaBase += 10;
+            }
+
+            document.getElementById("tarifaInput").value = tarifaBase;
+        }
+
+        document.getElementById("motivoSelect").addEventListener("change", calcularTarifa);
+        document.getElementById("requiereMed").addEventListener("change", calcularTarifa);
+
+        // Calcular al cargar la vista con los valores actuales
+        window.onload = calcularTarifa;
+    </script>
 }

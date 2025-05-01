@@ -1,20 +1,26 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddDbContext<DanielSierraDBEvaluacionPProgreso>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DanielSierraDBEvaluacionPProgreso") ?? throw new InvalidOperationException("Connection string 'DanielSierraDBEvaluacionPProgreso' not found.")));
+using EvaluacionPProgreso.Data;
 
-// Add services to the container.
+var builder = WebApplication.CreateBuilder(args);
+
+// Configurar el contexto de base de datos
+builder.Services.AddDbContext<DanielSierraDBEvaluacionPProgreso>(options =>
+    options.UseSqlServer(
+        builder.Configuration.GetConnectionString("DanielSierraDBEvaluacionPProgreso")
+        ?? throw new InvalidOperationException("Connection string 'DanielSierraDBEvaluacionPProgreso' not found."))
+);
+
+// Agregar servicios al contenedor
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Configurar la canalización HTTP
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-    app.UseHsts();
+    app.UseHsts(); // Seguridad HTTP Strict Transport Security
 }
 
 app.UseHttpsRedirection();
@@ -24,6 +30,7 @@ app.UseRouting();
 
 app.UseAuthorization();
 
+// Rutas
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");

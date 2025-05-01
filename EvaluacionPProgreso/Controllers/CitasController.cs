@@ -1,13 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using EvaluacionPProgreso.Models;
+using System.Threading.Tasks;
+using System.Linq;
+using EvaluacionPProgreso.Data;
 
-namespace EvaluacionPProgreso.Controllers
+namespace EvaluacionPProgreso.Controllers 
 {
     public class CitasController : Controller
     {
@@ -18,32 +17,6 @@ namespace EvaluacionPProgreso.Controllers
             _context = context;
         }
 
-        // GET: Citas
-        public async Task<IActionResult> Index()
-        {
-            var danielSierraDBEvaluacionPProgreso = _context.Cita.Include(c => c.Mascota);
-            return View(await danielSierraDBEvaluacionPProgreso.ToListAsync());
-        }
-
-        // GET: Citas/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var cita = await _context.Cita
-                .Include(c => c.Mascota)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (cita == null)
-            {
-                return NotFound();
-            }
-
-            return View(cita);
-        }
-
         // GET: Citas/Create
         public IActionResult Create()
         {
@@ -52,11 +25,9 @@ namespace EvaluacionPProgreso.Controllers
         }
 
         // POST: Citas/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,FechaVisita,Motivo,Tarifa,RequiereMedicacion,MascotaId")] Cita cita)
+        public async Task<IActionResult> Create([Bind("FechaVisita,Motivo,RequiereMedicacion,Tarifa,MascotaId")] Cita cita)
         {
             if (ModelState.IsValid)
             {
@@ -64,100 +35,16 @@ namespace EvaluacionPProgreso.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+
             ViewData["MascotaId"] = new SelectList(_context.Mascota, "Id", "Nombre", cita.MascotaId);
             return View(cita);
         }
 
-        // GET: Citas/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        // Puedes agregar aquí el método Index si lo necesitas para el redirect
+        public IActionResult Index()
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var cita = await _context.Cita.FindAsync(id);
-            if (cita == null)
-            {
-                return NotFound();
-            }
-            ViewData["MascotaId"] = new SelectList(_context.Mascota, "Id", "Nombre", cita.MascotaId);
-            return View(cita);
-        }
-
-        // POST: Citas/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,FechaVisita,Motivo,Tarifa,RequiereMedicacion,MascotaId")] Cita cita)
-        {
-            if (id != cita.Id)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(cita);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!CitaExists(cita.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["MascotaId"] = new SelectList(_context.Mascota, "Id", "Nombre", cita.MascotaId);
-            return View(cita);
-        }
-
-        // GET: Citas/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var cita = await _context.Cita
-                .Include(c => c.Mascota)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (cita == null)
-            {
-                return NotFound();
-            }
-
-            return View(cita);
-        }
-
-        // POST: Citas/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var cita = await _context.Cita.FindAsync(id);
-            if (cita != null)
-            {
-                _context.Cita.Remove(cita);
-            }
-
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
-
-        private bool CitaExists(int id)
-        {
-            return _context.Cita.Any(e => e.Id == id);
+            var citas = _context.Cita.Include(c => c.Mascota).ToList();
+            return View(citas);
         }
     }
 }

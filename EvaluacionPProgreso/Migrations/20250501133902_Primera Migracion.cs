@@ -51,7 +51,7 @@ namespace EvaluacionPProgreso.Migrations
                         column: x => x.DuenoId,
                         principalTable: "Dueno",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -74,7 +74,7 @@ namespace EvaluacionPProgreso.Migrations
                         column: x => x.MascotaId,
                         principalTable: "Mascota",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(

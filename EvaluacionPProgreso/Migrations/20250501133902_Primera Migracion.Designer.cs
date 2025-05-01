@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EvaluacionPProgreso.Migrations
 {
     [DbContext(typeof(DanielSierraDBEvaluacionPProgreso))]
-    [Migration("20250501125809_Primera Migracion")]
+    [Migration("20250501133902_Primera Migracion")]
     partial class PrimeraMigracion
     {
         /// <inheritdoc />
